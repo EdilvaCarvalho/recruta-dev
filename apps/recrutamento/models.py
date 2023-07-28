@@ -29,12 +29,7 @@ class Candidato(models.Model):
     endereco = models.OneToOneField(Endereco, on_delete=models.CASCADE, primary_key=True)
     curriculo = models.FileField(upload_to='curriculos/', verbose_name="Currículo em PDF")
     foto = models.ImageField(upload_to="fotos/%Y/%m/%d/", blank=True)
-    usuario = models.ForeignKey(
-        to=User, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="user")
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.usuario.first_name
@@ -62,32 +57,21 @@ class Empresa(models.Model):
     instagram = models.URLField(max_length=200)
     logo = models.ImageField(upload_to="logos/%Y/%m/%d/", blank=True)
     banner = models.ImageField(upload_to="banners/%Y/%m/%d/", blank=True)
-    sobre = models.ForeignKey(
-        to=Sobre, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="sobre")
-    usuario = models.ForeignKey(
-        to=User, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="user")
+    sobre = models.ForeignKey(Sobre, on_delete=models.PROTECT)
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    class Meta():
+        ordering = ['nome_fantasia']
+
+    def __str__(self):
+        return self.nome_fantasia
     
 class Recrutador(models.Model):
-    usuario = models.ForeignKey(
-        to=User, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="user")
-    empresa = models.ForeignKey(
-        to=Empresa, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="emepresa")
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.usuario.first_name
     
 class Vaga(models.Model):
     SENIORIDADE = [
@@ -128,9 +112,10 @@ class Vaga(models.Model):
     responsabilidades_atribuicoes = ArrayField(models.TextField(max_length=255), blank=True)
     requisitos_qualificacoes = ArrayField(models.TextField(max_length=255), blank=True)
     exclusiva_pcd = models.BooleanField(default=False)
-    empresa = models.ForeignKey(
-        to=Empresa, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=False, 
-        related_name="emepresa")
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+
+    class Meta():
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
